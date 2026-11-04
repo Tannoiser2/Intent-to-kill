@@ -30,6 +30,7 @@ var anteprima_testo: Label
 var finale: Control
 var mostra_segreti := false
 var esclusi := {}                   # moventi esclusi a mano dal Detective
+var esclusi_civ := {}               # civili attenuati a mano nel taccuino
 
 var _in_attesa := false
 var _richiesta := {}
@@ -352,22 +353,62 @@ func _dossier_taccuino() -> void:
 	var vf := VBoxContainer.new()
 	foglio.add_child(vf)
 	dossier.add_child(foglio)
-	# testimonianze raggruppate per civile
+	# testimonianze: una riga per civile, una colonna per domanda
 	var per := {}
 	var ordine := []
 	for t in m.testimonianze:
 		if not per.has(t["civ"]):
-			per[t["civ"]] = []
+			per[t["civ"]] = {}
 			ordine.append(t["civ"])
-		per[t["civ"]].append(t)
+		per[t["civ"]][t["q"]] = per[t["civ"]].get(t["q"], []) + [t["r"]]
 	if ordine.is_empty():
 		vf.add_child(UI.macchina("Nessuna testimonianza raccolta.", 16))
-	for c in ordine:
-		var parti := []
-		for t in per[c]:
-			parti.append("%s? %s" % [Dati.domanda(t["q"])["breve"], "SI" if t["r"] else "NO"])
-		var morto := "  (vittima)" if m.pos[c] == -1 else ""
-		vf.add_child(UI.macchina("%s (%s)%s: %s" % [Dati.civile(c)["nome"], Dati.nome_gruppo(Dati.civile(c)["gruppo"]), morto, ", ".join(parti)], 15))
+	else:
+		var sigle := ["U", "D", "20", "40", "60", "Es", "Me", "Ro", "Al", "AM", "Ba"]
+		var g := GridContainer.new()
+		g.columns = 12
+		g.add_theme_constant_override("h_separation", 2)
+		g.add_theme_constant_override("v_separation", 1)
+		vf.add_child(g)
+		var th := UI.macchina("Testimone", 12)
+		th.autowrap_mode = TextServer.AUTOWRAP_OFF
+		th.custom_minimum_size.x = 92
+		g.add_child(th)
+		for i in sigle.size():
+			var h := UI.macchina(sigle[i], 12)
+			h.autowrap_mode = TextServer.AUTOWRAP_OFF
+			h.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			h.custom_minimum_size.x = 23
+			h.tooltip_text = Dati.domanda(i)["testo"]
+			h.mouse_filter = Control.MOUSE_FILTER_PASS
+			g.add_child(h)
+		for c in ordine:
+			var nm := UI.macchina(Dati.civile(c)["nome"] + ("  +" if m.pos[c] == -1 else ""), 12, UI.colore_gruppo(Dati.civile(c)["gruppo"]).darkened(0.25))
+			nm.autowrap_mode = TextServer.AUTOWRAP_OFF
+			nm.clip_text = true
+			nm.custom_minimum_size.x = 92
+			nm.mouse_filter = Control.MOUSE_FILTER_PASS
+			nm.tooltip_text = "%s (%s)%s" % [Dati.civile(c)["nome"], Dati.descrivi(c), "\nVittima" if m.pos[c] == -1 else ""]
+			if esclusi_civ.has(c):
+				nm.modulate = Color(1, 1, 1, 0.35)
+			nm.gui_input.connect(func(ev):
+				if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+					if esclusi_civ.has(c):
+						esclusi_civ.erase(c)
+					else:
+						esclusi_civ[c] = true
+					_aggiorna_dossier())
+			g.add_child(nm)
+			for q in sigle.size():
+				var risp: Array = per[c].get(q, [])
+				var tx := ""
+				for r in risp:
+					tx += ("SI" if r else "NO")
+				var cel := UI.macchina(tx, 12, Color(0.1, 0.42, 0.25) if (not risp.is_empty() and risp[-1]) else UI.ROSSO_SCURO)
+				cel.autowrap_mode = TextServer.AUTOWRAP_OFF
+				cel.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				g.add_child(cel)
+		vf.add_child(UI.macchina("U/D uomo, donna; 20/40/60 età; Es/Me/Ro corporatura; Al/AM/Ba altezza. Clic su un nome per attenuarlo come promemoria; + = vittima.", 12, Color(0.35, 0.3, 0.25)))
 	# sorveglianze
 	if not m.sorveglianze.is_empty():
 		vf.add_child(HSeparator.new())
