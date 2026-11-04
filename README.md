@@ -8,6 +8,7 @@ Si gioca nel browser: https://tannoiser2.github.io/Intent-to-kill/
 
 - **Modalità Logica** completa: 20 civili su 54, Assassino, Persona Segnalata e Sostenitori segreti, intimidazioni, omicidi secondo il movente, rinuncia all'omicidio (una sola volta), risposta iniziale, interrogatori con le 11 domande, i quattro edifici (Comando di Polizia, Ristorante, Ospedale, Caserma dei Pompieri), Sorveglianza, fase della Città con la pila dei gruppi sociali, accusa finale o anticipata dal terzo round.
 - **Modalità Intuizione**: 14 carte Assassino (2 sotto ogni Scena del Crimine), 14 carte Detective con le 3 disponibili e la carta conservata, 24 prove, ispezione della Scena del Crimine, verifica delle prove, simbolo del revolver, Sesto senso e Corrompere la polizia come reazioni, 8 moventi.
+- **Gli 8 scenari del regolamento** (T-Men, On Dangerous Ground, Touch of Evil, D.O.A., Panic in the Streets, The Street with No Name, Stranger on the Third Floor, Split Second): disposizione di edifici e civili, moventi (6 in Logica, 8 in Intuizione), gruppi di civili fissati e, in Intuizione, le carte iniziali, le prove nei quartieri e l'evacuazione degli edifici.
 - **I 12 moventi** con tutte le precisazioni del regolamento (Cannibale, Estremista, Cultista con la Persona Segnalata, Rapinatore, ecc.).
 - **IA per entrambi i ruoli**: l'Assassino sceglie vittime che lasciano aperti più moventi, intimidisce i testimoni sinceri vicini alla prossima Scena del Crimine e fa mentire i complici in modo coerente; il Detective ragiona solo sulle informazioni pubbliche, pesando tutte le ipotesi compatibili (Assassino, Sostenitori, Persona Segnalata, movente) e scegliendo domande e azioni che le dividono meglio.
 - **Materiale dell'edizione italiana**: carte Civile, moventi, carte Assassino e Detective dalle scansioni; tabellone, edifici, prove e segnalini dal modulo Tabletop Simulator. Promemoria delle fasi in italiano sopra il tabellone.
@@ -30,6 +31,8 @@ Si gioca nel browser: https://tannoiser2.github.io/Intent-to-kill/
 godot --headless --path . -s tests/sim.gd -- 60 logica          # partite IA contro IA
 godot --headless --path . -s tests/sim.gd -- 60 intuizione
 godot --headless --path . -s tests/ripresa.gd                   # salvataggi: ripresa identica
+godot --headless --path . -s tests/compila.gd                   # tutti gli script compilano
+SIM_SCENARI=1 godot --headless --path . -s tests/sim.gd -- 54 intuizione   # anche con gli scenari
 python3 tools/controlla_glifi.py                                 # nessun carattere mancante nei font
 xvfb-run godot --path . --rendering-driver opengl3 -s tests/foto.gd -- /tmp/foto logica 1
 ```
@@ -44,4 +47,4 @@ Solo su richiesta: Actions » Pubblica » Run workflow, oppure un commit con `[p
 
 - Nel gioco online i due dispositivi fanno girare lo stesso motore: anche quello del Detective «conosce» i segreti dell'Assassino, ma l'interfaccia non li mostra mai.
 - La Bomba artigianale sceglie da sola come vittima vera un civile del quartiere che rispetta il movente.
-- Gli scenari del regolamento (T-Men, D.O.A. e gli altri) non sono ancora inclusi; gli edifici si possono disporre come nel regolamento o a caso.
+- Degli scenari non sono incluse le regole narrative più particolari (l'agente dell'FBI di The Street with No Name, la Sorveglianza a distanza di T-Men, il primo omicidio di D.O.A., le due carte conservate) né i due scenari dell'espansione.

@@ -21,7 +21,7 @@ func _init() -> void:
 		root.add_child(m)
 		if OS.get_environment("SIM_TRACE") != "":
 			m.messaggio.connect(func(t, per): print("   > ", t))
-		var cfg := {"seme": primo + k, "modo": modo, "moventi": "casuali" if k % 2 == 1 else "principianti", "persona_segnalata": k % 3 != 0,
+		var cfg := {"seme": primo + k, "modo": modo, "moventi": "casuali" if k % 2 == 1 else "principianti", "persona_segnalata": k % 3 != 0, "scenario": ["", "tmen", "terreno", "infernale", "doa", "panico", "strada", "terzo", "attimo"][k % 9] if OS.get_environment("SIM_SCENARI") != "" else "",
 			"giocatori": [{"nome": "A", "ia": true}, {"nome": "D", "ia": true}]}
 		m.prepara(cfg)
 		m.controllori = [ControlloSim.new(), ControlloSim.new()]

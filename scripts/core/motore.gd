@@ -55,6 +55,7 @@ var uccisioni: Array = []       # {civ, foto (prima dell'omicidio), round, b}
 var registro: Array = []        # testo della partita (per i test)
 
 var intuizione: Intuizione      # carte e prove della modalità Intuizione (null in Logica)
+var scenario := {}
 
 
 func prepara(cfg: Dictionary) -> void:
@@ -68,14 +69,36 @@ func prepara(cfg: Dictionary) -> void:
 	for i in d["civili"].size():
 		pos.append(-2)
 		intim.append(false)
-	# 20 civili a caso fra i 54
+	# scenario (disposizione di edifici e civili, moventi, regole speciali)
+	scenario = {}
+	for sc in d.get("scenari", []):
+		if sc["id"] == cfg.get("scenario", ""):
+			scenario = sc
+	# 20 civili a caso fra i 54 (alcuni scenari fissano quanti per gruppo)
 	var mazzo := range(d["civili"].size())
 	_mescola(mazzo)
-	civili = mazzo.slice(0, 20)
+	if scenario.has("gruppi_civili"):
+		var quote: Dictionary = scenario["gruppi_civili"]
+		civili = []
+		for c in mazzo:
+			var g: String = d["civili"][c]["gruppo"]
+			var q: int = int(quote.get(g, quote.get("*", 0)))
+			var gia := 0
+			for x in civili:
+				if d["civili"][x]["gruppo"] == g:
+					gia += 1
+			if gia < q:
+				civili.append(c)
+		_mescola(civili)
+		civili = civili.slice(0, 20)
+	else:
+		civili = mazzo.slice(0, 20)
 	# edifici
 	edifici = {}
 	var disp: Dictionary = d["disposizioni"].get(cfg.get("citta", "base"), d["disposizioni"]["base"])
-	if cfg.get("citta", "base") == "casuale":
+	if not scenario.is_empty():
+		disp = scenario
+	if cfg.get("citta", "base") == "casuale" and scenario.is_empty():
 		var tipi := ["polizia", "polizia", "ristorante", "ristorante", "ospedale", "ospedale", "pompieri", "pompieri"]
 		var q := range(16)
 		_mescola(q)
@@ -87,6 +110,8 @@ func prepara(cfg: Dictionary) -> void:
 	# moventi in gioco
 	var n_mov := 8 if cfg.get("modo", "logica") == "intuizione" else 6
 	var scelta: Variant = cfg.get("moventi", "principianti")
+	if not scenario.is_empty():
+		scelta = scenario["moventi"].slice(0, n_mov)
 	if scelta is Array:
 		moventi = scelta.duplicate()
 	elif scelta == "casuali":
@@ -100,16 +125,22 @@ func prepara(cfg: Dictionary) -> void:
 		moventi = d["moventi_principianti"].duplicate() if n_mov == 6 else ["psicopatico", "maniaco", "sadico", "tagliagole", "killer", "terrorista", "estremista", "rapinatore"]
 	if not cfg.get("persona_segnalata", true):
 		moventi.erase("cultista")
+		if not scenario.is_empty():
+			for mv in scenario["moventi"]:
+				if moventi.size() < n_mov and mv != "cultista" and not (mv in moventi):
+					moventi.append(mv)
 	# segreti: l'Assassino pesca a caso fra i 20, poi la Persona Segnalata, poi il movente
 	var venti := civili.duplicate()
 	_mescola(venti)
 	assassino = venti[0]
 	poi = venti[1] if cfg.get("persona_segnalata", true) else -1
 	movente = moventi[rng.randi_range(0, moventi.size() - 1)]
-	# civili in città: 2 negli angoli, 1 negli altri quartieri
+	# civili in città: 2 negli angoli, 1 negli altri quartieri (o come dice lo scenario)
 	var k := 0
 	for b in 16:
 		var n := 2 if b in [0, 3, 12, 15] else 1
+		if not scenario.is_empty():
+			n = int(scenario["civili"][b])
 		for j in n:
 			pos[civili[k]] = b
 			k += 1
@@ -251,6 +282,7 @@ func _preparazione() -> void:
 	scrivi("Il Detective comincia a %s." % Dati.quartiere(det))
 	if intuizione != null:
 		await intuizione.preparazione()
+		intuizione.detective_entra(det)
 	cambiato.emit()
 
 
@@ -333,12 +365,22 @@ func uccidi(c: int, conta_prova := true) -> void:
 
 func _fase_detective() -> void:
 	fase = "detective"
+	if intuizione != null and scenario.get("evacuazione", false) and not edifici.is_empty():
+		var eops := []
+		for b in edifici:
+			eops.append({"t": "Evacua %s a %s" % [Dati.edificio(edifici[b])["nome"], Dati.quartiere(b)], "b": b})
+		cambiato.emit()
+		var r := await chiedi(DETECTIVE, {"tipo": "evacua", "testo": "Split Second: devi evacuare un edificio dalla città.", "opzioni": eops})
+		scrivi("Il Detective evacua %s." % eops[r]["t"].substr(7))
+		edifici.erase(eops[r]["b"])
 	# Risposta iniziale
 	if not uccisioni.is_empty() and uccisioni[-1]["round"] == round:
 		var b: int = scene[-1]
 		det = b
 		scrivi("Risposta iniziale: il Detective accorre a %s." % Dati.quartiere(b))
 		evento.emit({"k": "detective", "b": b})
+		if intuizione != null:
+			intuizione.detective_entra(det)
 		cambiato.emit()
 		await _sgombera(b)
 	if intuizione != null:

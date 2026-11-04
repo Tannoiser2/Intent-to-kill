@@ -300,6 +300,15 @@ func _detective(m: Motore, req: Dictionary) -> int:
 			return 0
 		"cordone":
 			return _verso(m, ops, m.det)
+		"evacua":
+			var best := 0
+			var bd := -1
+			for i in ops.size():
+				var dd := Dati.distanza(ops[i]["b"], m.det)
+				if dd > bd:
+					bd = dd
+					best = i
+			return best
 	return 0
 
 

@@ -9,6 +9,8 @@ var modo := "logica"
 var moventi := "principianti"
 var poi := true
 var citta := "base"
+var scenario := ""
+var l_scenario: Label
 var nome: LineEdit
 var codice: LineEdit
 var stato: Label
@@ -51,6 +53,25 @@ func _ready() -> void:
 	_riga(v, "Moventi", "moventi", [["Prima partita", "principianti"], ["A caso", "casuali"]], moventi)
 	_riga(v, "Persona Segnalata", "poi", [["Sì", true], ["No (prima partita)", false]], poi)
 	_riga(v, "Edifici", "citta", [["Come nel regolamento", "base"], ["A caso", "casuale"]], citta)
+	var hs := HBoxContainer.new()
+	var ls := UI.etichetta("Scenario", 19, UI.CARTA)
+	ls.custom_minimum_size.x = 190
+	hs.add_child(ls)
+	var ob := OptionButton.new()
+	ob.add_theme_font_size_override("font_size", 18)
+	ob.focus_mode = Control.FOCUS_NONE
+	ob.add_item("Nessuno: partita normale")
+	var ids := [""]
+	for scn in Dati.d()["scenari"]:
+		ob.add_item("%s (Detective: %s)" % [scn["nome"], scn["detective"]])
+		ids.append(scn["id"])
+	ob.select(maxi(0, ids.find(scenario)))
+	ob.item_selected.connect(func(i): scenario = ids[i]; _salva_impostazioni(); _mostra_scenario())
+	hs.add_child(ob)
+	v.add_child(hs)
+	l_scenario = UI.testo_lungo("", 15, UI.CARTA)
+	v.add_child(l_scenario)
+	_mostra_scenario()
 	v.add_child(UI.testo_lungo("Logica: battaglia di deduzione pura (6 moventi). Intuizione: carte Assassino e Detective, prove sulle Scene del Crimine e 8 moventi.", 15, UI.GRIGIO))
 	var hb := HBoxContainer.new()
 	v.add_child(hb)
@@ -124,6 +145,21 @@ func _riga(v: VBoxContainer, titolo: String, chiave: String, scelte: Array, attu
 	v.add_child(h)
 
 
+func _mostra_scenario() -> void:
+	if l_scenario == null:
+		return
+	for sc in Dati.d()["scenari"]:
+		if sc["id"] == scenario:
+			var mv := []
+			for x in sc["moventi"]:
+				mv.append(Dati.movente(x)["nome"])
+			l_scenario.text = "%s\nModalità Logica: %s. Intuizione: anche %s.\n%s Con uno scenario edifici, civili e moventi seguono lo scenario." % [sc["trama"], ", ".join(mv.slice(0, 6)), " e ".join(mv.slice(6)), sc["regole"]]
+			l_scenario.visible = true
+			return
+	l_scenario.text = ""
+	l_scenario.visible = false
+
+
 func _carica_impostazioni() -> void:
 	var c := ConfigFile.new()
 	if c.load("user://impostazioni.cfg") == OK:
@@ -132,17 +168,18 @@ func _carica_impostazioni() -> void:
 		moventi = c.get_value("m", "moventi", moventi)
 		poi = c.get_value("m", "poi", poi)
 		citta = c.get_value("m", "citta", citta)
+		scenario = c.get_value("m", "scenario", scenario)
 
 
 func _salva_impostazioni() -> void:
 	var c := ConfigFile.new()
-	for k in ["ruolo", "modo", "moventi", "poi", "citta"]:
+	for k in ["ruolo", "modo", "moventi", "poi", "citta", "scenario"]:
 		c.set_value("m", k, get(k))
 	c.save("user://impostazioni.cfg")
 
 
 func _config() -> Dictionary:
-	return {"modo": modo, "moventi": moventi, "persona_segnalata": poi, "citta": citta, "seme": randi() % 1000000000,
+	return {"modo": modo, "moventi": moventi, "persona_segnalata": poi, "citta": citta, "scenario": scenario, "seme": randi() % 1000000000,
 		"io": ruolo if ruolo < 2 else -1,
 		"giocatori": [{"nome": "Assassino", "ia": ruolo != 0}, {"nome": "Detective", "ia": ruolo != 1}]}
 

@@ -55,6 +55,8 @@ var _multiplo := false
 var _ricatto_usato := false
 var profilazioni: Array = []    # {a, b, non}
 var confessione := ""
+var prove_quartieri := {}       # Stranger on the Third Floor: quartiere -> prova scoperta
+var solo_prove_quartieri := false
 
 
 func prepara() -> void:
@@ -62,18 +64,29 @@ func prepara() -> void:
 		for i in CARTE_ASSASSINO[k]["n"]:
 			mazzo_a.append(k)
 	m._mescola(mazzo_a)
+	for k in m.scenario.get("carte_assassino", []):
+		var c: String = mazzo_a.pop_back() if k == "caso" else k
+		if k != "caso":
+			mazzo_a.erase(k)
+		mano_a.append(c)
 	for i in 5:
 		sotto_scene.append([mazzo_a.pop_back(), mazzo_a.pop_back()])
 	for k in CARTE_DETECTIVE:
 		for i in CARTE_DETECTIVE[k]["n"]:
 			mazzo_d.append(k)
 	m._mescola(mazzo_d)
+	if m.scenario.has("carta_detective"):
+		conservata = m.scenario["carta_detective"]
+		mazzo_d.erase(conservata)
 	for i in 3:
 		disponibili.append(_pesca_d())
 	for t in ["polizia", "ristorante", "ospedale", "pompieri"]:
 		for i in 6:
 			prove_pool.append(t)
 	m._mescola(prove_pool)
+	for b in m.scenario.get("prove_quartieri", []):
+		prove_quartieri[int(b)] = prove_pool.pop_back()
+	solo_prove_quartieri = m.scenario.has("prove_quartieri")
 
 
 func preparazione() -> void:
@@ -325,11 +338,12 @@ func dopo_omicidio() -> void:
 
 
 func prova_per_omicidio() -> void:
-	_dai_prova("per l'omicidio")
+	if not solo_prove_quartieri:
+		_dai_prova("per l'omicidio")
 
 
 func _dai_prova(perche: String) -> void:
-	if prove_pool.is_empty():
+	if prove_pool.is_empty() or solo_prove_quartieri:
 		return
 	var t: String = prove_pool.pop_back()
 	prove.append(t)
@@ -353,11 +367,15 @@ func dopo_risposta_iniziale() -> void:
 			var s := await m.chiedi(Motore.ASSASSINO, {"tipo": "falsa_dest", "testo": "Dove mandi il Detective?", "opzioni": ops})
 			m.det = ops[s]["b"]
 			m.scrivi("Falsa segnalazione: il Detective corre a %s." % Dati.quartiere(m.det))
+			detective_entra(m.det)
 			m.cambiato.emit()
 
 
-func detective_entra(_b: int) -> void:
-	pass
+func detective_entra(b: int) -> void:
+	if prove_quartieri.has(b):
+		prove.append(prove_quartieri[b])
+		prove_quartieri.erase(b)
+		m.scrivi("Il Detective trova una prova a %s." % Dati.quartiere(b))
 
 
 ## Ricatto: si può giocare durante un interrogatorio di un quartiere con 2 o 3 civili.
@@ -404,7 +422,7 @@ func reazione_sorveglianza() -> bool:
 
 func azioni_detective(usate: Dictionary) -> Array:
 	var out := []
-	if m.det in m.scene and not usate.has("scena") and not prove_pool.is_empty():
+	if m.det in m.scene and not usate.has("scena") and not prove_pool.is_empty() and not solo_prove_quartieri:
 		out.append({"t": "Ispeziona la Scena del Crimine (2 prove, ne tieni una)", "azione": "scena"})
 	return out
 
@@ -551,6 +569,7 @@ func gioca_d(k: String) -> void:
 			var r := await m.chiedi(Motore.DETECTIVE, {"tipo": "sequestro", "testo": "Sequestro del veicolo: dove ti sposti?", "opzioni": ops})
 			m.det = ops[r]["b"]
 			m.scrivi("Il Detective si sposta a %s." % Dati.quartiere(m.det))
+			detective_entra(m.det)
 		"testimonianza":
 			var cand := []
 			for c in m.vivi():

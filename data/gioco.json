@@ -803,5 +803,398 @@
   "vigilante",
   "killer",
   "terrorista"
+ ],
+ "scenari": [
+  {
+   "id": "tmen",
+   "nome": "T-Men",
+   "detective": "Agente",
+   "trama": "Una banda di falsari stampa banconote perfette. L'agente del Tesoro O'Brien deve incontrare un informatore, ma il contatto viene ucciso prima dell'incontro: O'Brien si infiltra nella banda per capire se è stato un incidente.",
+   "edifici": {
+    "1": "polizia",
+    "3": "ospedale",
+    "4": "ospedale",
+    "6": "pompieri",
+    "9": "ristorante",
+    "11": "ristorante",
+    "12": "pompieri",
+    "14": "polizia"
+   },
+   "civili": [
+    2,
+    1,
+    1,
+    2,
+    1,
+    2,
+    2,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "moventi": [
+    "spia",
+    "tagliagole",
+    "psicopatico",
+    "vigilante",
+    "terrorista",
+    "sadico",
+    "maniaco",
+    "rapinatore"
+   ],
+   "regole": "Intuizione: l'Assassino comincia con 1 carta Assassino a caso.",
+   "carte_assassino": [
+    "caso"
+   ]
+  },
+  {
+   "id": "terreno",
+   "nome": "On Dangerous Ground",
+   "detective": "Poliziotto",
+   "trama": "Il detective Jim Wilson è in polizia da undici anni e diventa sempre più irascibile e violento. Ora dà la caccia a un assassino sconosciuto, intimidendo e picchiando tutti i sospetti. I suoi metodi brutali basteranno?",
+   "edifici": {
+    "1": "ristorante",
+    "2": "pompieri",
+    "4": "ospedale",
+    "7": "polizia",
+    "8": "polizia",
+    "11": "ospedale",
+    "13": "pompieri",
+    "14": "ristorante"
+   },
+   "civili": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    1,
+    1,
+    2,
+    2,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "moventi": [
+    "killer",
+    "psicopatico",
+    "vigilante",
+    "cultista",
+    "sadico",
+    "maniaco",
+    "spia",
+    "rapinatore"
+   ],
+   "regole": "Intuizione: il Detective comincia con la carta Sequestro del veicolo da parte.",
+   "carta_detective": "sequestro"
+  },
+  {
+   "id": "infernale",
+   "nome": "Touch of Evil",
+   "detective": "Procuratore capo",
+   "trama": "Una cittadina al confine è segnata dal male: dopo un omicidio spariscono dodici candelotti di dinamite. Il procuratore indaga di persona, fra un poliziotto straniero sospettato e un capitano che manomette le prove.",
+   "edifici": {
+    "1": "ristorante",
+    "2": "pompieri",
+    "5": "polizia",
+    "7": "ospedale",
+    "8": "ospedale",
+    "10": "polizia",
+    "13": "pompieri",
+    "14": "ristorante"
+   },
+   "civili": [
+    1,
+    2,
+    1,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    1,
+    1,
+    1,
+    1,
+    1,
+    2,
+    1
+   ],
+   "moventi": [
+    "spia",
+    "sadico",
+    "tagliagole",
+    "maniaco",
+    "estremista",
+    "psicopatico",
+    "terrorista",
+    "vigilante"
+   ],
+   "regole": "Intuizione: l'Assassino comincia con la carta Bomba artigianale.",
+   "carte_assassino": [
+    "bomba"
+   ]
+  },
+  {
+   "id": "doa",
+   "nome": "D.O.A.",
+   "detective": "Benefattore",
+   "trama": "Un ricco revisore dei conti scopre di essere stato avvelenato con un veleno lento: ha solo un giorno di vita. Poco tempo, ma un morto che cammina non ha niente da perdere.",
+   "edifici": {
+    "0": "pompieri",
+    "3": "ospedale",
+    "5": "polizia",
+    "6": "ristorante",
+    "8": "ristorante",
+    "10": "pompieri",
+    "12": "ospedale",
+    "14": "polizia"
+   },
+   "civili": [
+    1,
+    1,
+    1,
+    1,
+    2,
+    1,
+    1,
+    1,
+    2,
+    1,
+    1,
+    2,
+    1,
+    1,
+    1,
+    2
+   ],
+   "moventi": [
+    "spia",
+    "sadico",
+    "estremista",
+    "maniaco",
+    "cannibale",
+    "rapinatore",
+    "killer",
+    "vigilante"
+   ],
+   "regole": "Disposizione di edifici e civili e moventi dello scenario."
+  },
+  {
+   "id": "panico",
+   "nome": "Panic in the Streets",
+   "detective": "Chirurgo",
+   "trama": "Al porto c'è stato un omicidio e l'Assassino ha contratto dalla vittima la peste polmonare. Il capitano del Servizio sanitario ha 48 ore per trovare tutti quelli entrati in contatto con il contagio, compreso l'Assassino, che continua a uccidere.",
+   "edifici": {
+    "1": "ristorante",
+    "2": "ospedale",
+    "4": "pompieri",
+    "7": "polizia",
+    "9": "polizia",
+    "10": "ristorante",
+    "13": "ospedale",
+    "14": "pompieri"
+   },
+   "civili": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    2
+   ],
+   "moventi": [
+    "rapinatore",
+    "spia",
+    "psicopatico",
+    "sadico",
+    "vigilante",
+    "cultista",
+    "estremista",
+    "tagliagole"
+   ],
+   "regole": "In gioco 5 civili ciascuno da Immigrati, Medicina, Emarginati e Lavoratori. Intuizione: il Detective comincia con la carta Coprifuoco da parte.",
+   "gruppi_civili": {
+    "immigrati": 5,
+    "medicina": 5,
+    "emarginati": 5,
+    "lavoratori": 5
+   },
+   "carta_detective": "coprifuoco"
+  },
+  {
+   "id": "strada",
+   "nome": "The Street with No Name",
+   "detective": "Agente dell'FBI",
+   "trama": "Uno sconosciuto paga la cauzione di un sospettato e poi lo uccide. L'FBI prende il caso e prova a catturare l'assassino con un'esca: un agente sotto copertura si infiltra nel quartiere dei gangster.",
+   "edifici": {
+    "0": "ospedale",
+    "3": "pompieri",
+    "5": "polizia",
+    "6": "ristorante",
+    "9": "ospedale",
+    "10": "polizia",
+    "12": "pompieri",
+    "15": "ristorante"
+   },
+   "civili": [
+    1,
+    1,
+    2,
+    1,
+    2,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    2,
+    1,
+    2,
+    1,
+    1
+   ],
+   "moventi": [
+    "sadico",
+    "spia",
+    "vigilante",
+    "rapinatore",
+    "maniaco",
+    "terrorista",
+    "tagliagole",
+    "cultista"
+   ],
+   "regole": "In gioco 6 Criminali e 2 civili per ciascuno degli altri gruppi. Intuizione: il Detective comincia con la carta Blitz della polizia da parte.",
+   "gruppi_civili": {
+    "criminali": 6,
+    "*": 2
+   },
+   "carta_detective": "blitz"
+  },
+  {
+   "id": "terzo",
+   "nome": "Stranger on the Third Floor",
+   "detective": "Saldatrice",
+   "trama": "Il reporter Michael Ward è il testimone chiave di un omicidio. Trova un altro cadavere ucciso allo stesso modo, lo denuncia e viene arrestato. Per salvarlo la sua fidanzata Jane va a cercare il vero Assassino nei quartieri più pericolosi.",
+   "edifici": {
+    "0": "ristorante",
+    "1": "polizia",
+    "3": "ospedale",
+    "7": "pompieri",
+    "8": "pompieri",
+    "12": "ospedale",
+    "14": "ristorante",
+    "15": "polizia"
+   },
+   "civili": [
+    1,
+    2,
+    2,
+    1,
+    1,
+    1,
+    1,
+    1,
+    2,
+    1,
+    1,
+    2,
+    1,
+    1,
+    1,
+    1
+   ],
+   "moventi": [
+    "killer",
+    "rapinatore",
+    "estremista",
+    "vigilante",
+    "terrorista",
+    "maniaco",
+    "sadico",
+    "spia"
+   ],
+   "regole": "Intuizione: una prova scoperta in ogni quartiere tranne quelli centrali e gli angoli; il Detective la prende entrando nel quartiere e non riceve prove in altri modi.",
+   "prove_quartieri": [
+    1,
+    2,
+    4,
+    7,
+    8,
+    11,
+    13,
+    14
+   ]
+  },
+  {
+   "id": "attimo",
+   "nome": "Split Second",
+   "detective": "Veterano",
+   "trama": "Dopo un misterioso omicidio a una stazione di servizio, l'esercito evacua una città mineraria. Il colonnello Stuart sospetta i servizi segreti stranieri e deve trovare l'Assassino prima dell'alba, quando cominceranno i test nucleari.",
+   "edifici": {
+    "4": "ristorante",
+    "5": "polizia",
+    "6": "ospedale",
+    "7": "pompieri",
+    "12": "pompieri",
+    "13": "ristorante",
+    "14": "polizia",
+    "15": "ospedale"
+   },
+   "civili": [
+    1,
+    2,
+    2,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "moventi": [
+    "tagliagole",
+    "cannibale",
+    "terrorista",
+    "maniaco",
+    "sadico",
+    "killer",
+    "rapinatore",
+    "vigilante"
+   ],
+   "regole": "Intuizione: il Detective comincia con la carta Sesto senso; all'inizio di ogni sua fase deve evacuare un edificio dalla città.",
+   "carta_detective": "sesto",
+   "evacuazione": true
+  }
  ]
 }
