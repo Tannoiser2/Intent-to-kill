@@ -1,0 +1,807 @@
+{
+ "civili": [
+  {
+   "id": 0,
+   "nome": "Vedova di guerra",
+   "gruppo": "emarginati",
+   "sesso": "F",
+   "eta": 40,
+   "corporatura": "R",
+   "altezza": "B",
+   "img": "c00"
+  },
+  {
+   "id": 1,
+   "nome": "Coroner",
+   "gruppo": "medicina",
+   "sesso": "F",
+   "eta": 60,
+   "corporatura": "E",
+   "altezza": "B",
+   "img": "c01"
+  },
+  {
+   "id": 2,
+   "nome": "Benefattore",
+   "gruppo": "jetset",
+   "sesso": "M",
+   "eta": 40,
+   "corporatura": "M",
+   "altezza": "M",
+   "img": "c02"
+  },
+  {
+   "id": 3,
+   "nome": "Bibliotecaria",
+   "gruppo": "lavoratori",
+   "sesso": "F",
+   "eta": 60,
+   "corporatura": "E",
+   "altezza": "M",
+   "img": "c03"
+  },
+  {
+   "id": 4,
+   "nome": "Artista",
+   "gruppo": "jetset",
+   "sesso": "F",
+   "eta": 40,
+   "corporatura": "R",
+   "altezza": "A",
+   "img": "c04"
+  },
+  {
+   "id": 5,
+   "nome": "Gelataio",
+   "gruppo": "lavoratori",
+   "sesso": "M",
+   "eta": 20,
+   "corporatura": "M",
+   "altezza": "M",
+   "img": "c05"
+  },
+  {
+   "id": 6,
+   "nome": "Psichiatra",
+   "gruppo": "jetset",
+   "sesso": "M",
+   "eta": 60,
+   "corporatura": "E",
+   "altezza": "A",
+   "img": "c06"
+  },
+  {
+   "id": 7,
+   "nome": "Bellimbusto",
+   "gruppo": "emarginati",
+   "sesso": "M",
+   "eta": 20,
+   "corporatura": "R",
+   "altezza": "M",
+   "img": "c07"
+  },
+  {
+   "id": 8,
+   "nome": "Musicista",
+   "gruppo": "immigrati",
+   "sesso": "M",
+   "eta": 40,
+   "corporatura": "R",
+   "altezza": "B",
+   "img": "c08"
+  },
+  {
+   "id": 9,
+   "nome": "Conducente di autobus",
+   "gruppo": "lavoratori",
+   "sesso": "M",
+   "eta": 60,
+   "corporatura": "R",
+   "altezza": "B",
+   "img": "c09"
+  },
+  {
+   "id": 10,
+   "nome": "Giudice",
+   "gruppo": "autorita",
+   "sesso": "F",
+   "eta": 60,
+   "corporatura": "R",
+   "altezza": "B",
+   "img": "c10"
+  },
+  {
+   "id": 11,
+   "nome": "Tenente",
+   "gruppo": "autorita",
+   "sesso": "F",
+   "eta": 20,
+   "corporatura": "M",
+   "altezza": "M",
+   "img": "c11"
+  },
+  {
+   "id": 12,
+   "nome": "Mendicante",
+   "gruppo": "emarginati",
+   "sesso": "M",
+   "eta": 60,
+   "corporatura": "E",
+   "altezza": "B",
+   "img": "c12"
+  },
+  {
+   "id": 13,
+   "nome": "Annunciatore",
+   "gruppo": "stampa",
+   "sesso": "M",
+   "eta": 60,
+   "corporatura": "M",
+   "altezza": "B",
+   "img": "c13"
+  },
+  {
+   "id": 14,
+   "nome": "Scagnozzo",
+   "gruppo": "criminali",
+   "sesso": "M",
+   "eta": 20,
+   "corporatura": "R",
+   "altezza": "A",
+   "img": "c14"
+  },
+  {
+   "id": 15,
+   "nome": "Veterano",
+   "gruppo": "emarginati",
+   "sesso": "M",
+   "eta": 40,
+   "corporatura": "M",
+   "altezza": "A",
+   "img": "c15"
+  },
+  {
+   "id": 16,
+   "nome": "Giornalaio",
+   "gruppo": "stampa",
+   "sesso": "M",
+   "eta": 20,
+   "corporatura": "E",
+   "altezza": "M",
+   "img": "c16"
+  },
+  {
+   "id": 17,
+   "nome": "Boss mafioso",
+   "gruppo": "criminali",
+   "sesso": "M",
+   "eta": 60,
+   "corporatura": "E",
+   "altezza": "M",
+   "img": "c17"
+  },
+  {
+   "id": 18,
+   "nome": "Chirurgo",
+   "gruppo": "medicina",
+   "sesso": "M",
+   "eta": 40,
+   "corporatura": "E",
+   "altezza": "M",
+   "img": "c18"
+  },
+  {
+   "id": 19,
+   "nome": "Showgirl",
+   "gruppo": "emarginati",
+   "sesso": "F",
+   "eta": 20,
+   "corporatura": "E",
+   "altezza": "A",
+   "img": "c19"
+  },
+  {
+   "id": 20,
+   "nome": "Inserviente",
+   "gruppo": "medicina",
+   "sesso": "M",
+   "eta": 20,
+   "corporatura": "M",
+   "altezza": "B",
+   "img": "c20"
+  },
+  {
+   "id": 21,
+   "nome": "Avvocato",
+   "gruppo": "autorita",
+   "sesso": "F",
+   "eta": 40,
+   "corporatura": "E",
+   "altezza": "A",
+   "img": "c21"
+  },
+  {
+   "id": 22,
+   "nome": "Marinaio",
+   "gruppo": "immigrati",
+   "sesso": "M",
+   "eta": 20,
+   "corporatura": "E",
+   "altezza": "A",
+   "img": "c22"
+  },
+  {
+   "id": 23,
+   "nome": "Procuratore capo",
+   "gruppo": "autorita",
+   "sesso": "M",
+   "eta": 40,
+   "corporatura": "R",
+   "altezza": "M",
+   "img": "c23"
+  },
+  {
+   "id": 24,
+   "nome": "Veterinario",
+   "gruppo": "medicina",
+   "sesso": "M",
+   "eta": 60,
+   "corporatura": "R",
+   "altezza": "A",
+   "img": "c24"
+  },
+  {
+   "id": 25,
+   "nome": "Cameriera",
+   "gruppo": "lavoratori",
+   "sesso": "F",
+   "eta": 40,
+   "corporatura": "M",
+   "altezza": "B",
+   "img": "c25"
+  },
+  {
+   "id": 26,
+   "nome": "Gattara",
+   "gruppo": "emarginati",
+   "sesso": "F",
+   "eta": 60,
+   "corporatura": "M",
+   "altezza": "M",
+   "img": "c26"
+  },
+  {
+   "id": 27,
+   "nome": "Postina",
+   "gruppo": "stampa",
+   "sesso": "F",
+   "eta": 40,
+   "corporatura": "E",
+   "altezza": "B",
+   "img": "c27"
+  },
+  {
+   "id": 28,
+   "nome": "Coordinatore",
+   "gruppo": "autorita",
+   "sesso": "M",
+   "eta": 60,
+   "corporatura": "M",
+   "altezza": "A",
+   "img": "c28"
+  },
+  {
+   "id": 29,
+   "nome": "Suora",
+   "gruppo": "immigrati",
+   "sesso": "F",
+   "eta": 60,
+   "corporatura": "R",
+   "altezza": "A",
+   "img": "c29"
+  },
+  {
+   "id": 30,
+   "nome": "Ambasciatrice",
+   "gruppo": "governo",
+   "sesso": "F",
+   "eta": 40,
+   "corporatura": "M",
+   "altezza": "M",
+   "img": "c30"
+  },
+  {
+   "id": 31,
+   "nome": "Ricettatrice",
+   "gruppo": "criminali",
+   "sesso": "F",
+   "eta": 60,
+   "corporatura": "M",
+   "altezza": "A",
+   "img": "c31"
+  },
+  {
+   "id": 32,
+   "nome": "Professore",
+   "gruppo": "immigrati",
+   "sesso": "M",
+   "eta": 60,
+   "corporatura": "M",
+   "altezza": "M",
+   "img": "c32"
+  },
+  {
+   "id": 33,
+   "nome": "Segretaria",
+   "gruppo": "governo",
+   "sesso": "F",
+   "eta": 20,
+   "corporatura": "R",
+   "altezza": "B",
+   "img": "c33"
+  },
+  {
+   "id": 34,
+   "nome": "Redattrice",
+   "gruppo": "stampa",
+   "sesso": "F",
+   "eta": 60,
+   "corporatura": "R",
+   "altezza": "M",
+   "img": "c34"
+  },
+  {
+   "id": 35,
+   "nome": "Attrice",
+   "gruppo": "jetset",
+   "sesso": "F",
+   "eta": 20,
+   "corporatura": "E",
+   "altezza": "M",
+   "img": "c35"
+  },
+  {
+   "id": 36,
+   "nome": "Giocatore di baseball",
+   "gruppo": "jetset",
+   "sesso": "M",
+   "eta": 20,
+   "corporatura": "R",
+   "altezza": "B",
+   "img": "c36"
+  },
+  {
+   "id": 37,
+   "nome": "Informatrice",
+   "gruppo": "criminali",
+   "sesso": "F",
+   "eta": 20,
+   "corporatura": "E",
+   "altezza": "B",
+   "img": "c37"
+  },
+  {
+   "id": 38,
+   "nome": "Sindaco",
+   "gruppo": "governo",
+   "sesso": "M",
+   "eta": 40,
+   "corporatura": "E",
+   "altezza": "B",
+   "img": "c38"
+  },
+  {
+   "id": 39,
+   "nome": "Infermiera",
+   "gruppo": "medicina",
+   "sesso": "F",
+   "eta": 40,
+   "corporatura": "M",
+   "altezza": "A",
+   "img": "c39"
+  },
+  {
+   "id": 40,
+   "nome": "Barista",
+   "gruppo": "criminali",
+   "sesso": "F",
+   "eta": 40,
+   "corporatura": "R",
+   "altezza": "M",
+   "img": "c40"
+  },
+  {
+   "id": 41,
+   "nome": "Poliziotto",
+   "gruppo": "autorita",
+   "sesso": "M",
+   "eta": 20,
+   "corporatura": "E",
+   "altezza": "B",
+   "img": "c41"
+  },
+  {
+   "id": 42,
+   "nome": "Saldatrice",
+   "gruppo": "lavoratori",
+   "sesso": "F",
+   "eta": 20,
+   "corporatura": "R",
+   "altezza": "A",
+   "img": "c42"
+  },
+  {
+   "id": 43,
+   "nome": "Medium",
+   "gruppo": "immigrati",
+   "sesso": "F",
+   "eta": 20,
+   "corporatura": "M",
+   "altezza": "B",
+   "img": "c43"
+  },
+  {
+   "id": 44,
+   "nome": "Lobbista",
+   "gruppo": "governo",
+   "sesso": "F",
+   "eta": 60,
+   "corporatura": "E",
+   "altezza": "A",
+   "img": "c44"
+  },
+  {
+   "id": 45,
+   "nome": "Agente segreto",
+   "gruppo": "governo",
+   "sesso": "M",
+   "eta": 20,
+   "corporatura": "M",
+   "altezza": "A",
+   "img": "c45"
+  },
+  {
+   "id": 46,
+   "nome": "Deputato",
+   "gruppo": "governo",
+   "sesso": "M",
+   "eta": 60,
+   "corporatura": "R",
+   "altezza": "M",
+   "img": "c46"
+  },
+  {
+   "id": 47,
+   "nome": "Pompiere",
+   "gruppo": "lavoratori",
+   "sesso": "M",
+   "eta": 40,
+   "corporatura": "E",
+   "altezza": "A",
+   "img": "c47"
+  },
+  {
+   "id": 48,
+   "nome": "Farmacista",
+   "gruppo": "medicina",
+   "sesso": "F",
+   "eta": 20,
+   "corporatura": "R",
+   "altezza": "M",
+   "img": "c48"
+  },
+  {
+   "id": 49,
+   "nome": "Assistente di bordo",
+   "gruppo": "immigrati",
+   "sesso": "F",
+   "eta": 40,
+   "corporatura": "E",
+   "altezza": "M",
+   "img": "c49"
+  },
+  {
+   "id": 50,
+   "nome": "Ristoratrice",
+   "gruppo": "jetset",
+   "sesso": "F",
+   "eta": 60,
+   "corporatura": "M",
+   "altezza": "B",
+   "img": "c50"
+  },
+  {
+   "id": 51,
+   "nome": "Gangster",
+   "gruppo": "criminali",
+   "sesso": "M",
+   "eta": 40,
+   "corporatura": "M",
+   "altezza": "B",
+   "img": "c51"
+  },
+  {
+   "id": 52,
+   "nome": "Reporter",
+   "gruppo": "stampa",
+   "sesso": "F",
+   "eta": 20,
+   "corporatura": "M",
+   "altezza": "A",
+   "img": "c52"
+  },
+  {
+   "id": 53,
+   "nome": "Fotografo",
+   "gruppo": "stampa",
+   "sesso": "M",
+   "eta": 40,
+   "corporatura": "R",
+   "altezza": "A",
+   "img": "c53"
+  }
+ ],
+ "gruppi": [
+  {
+   "id": "autorita",
+   "nome": "Autorità",
+   "colore": "#1f3a73"
+  },
+  {
+   "id": "stampa",
+   "nome": "Stampa",
+   "colore": "#e0a21c"
+  },
+  {
+   "id": "emarginati",
+   "nome": "Emarginati",
+   "colore": "#6b3f22"
+  },
+  {
+   "id": "medicina",
+   "nome": "Medicina",
+   "colore": "#1f7a3a"
+  },
+  {
+   "id": "governo",
+   "nome": "Governo",
+   "colore": "#5b2a82"
+  },
+  {
+   "id": "lavoratori",
+   "nome": "Lavoratori",
+   "colore": "#e2671f"
+  },
+  {
+   "id": "criminali",
+   "nome": "Criminali",
+   "colore": "#a81e22"
+  },
+  {
+   "id": "jetset",
+   "nome": "Jet Set",
+   "colore": "#c4206e"
+  },
+  {
+   "id": "immigrati",
+   "nome": "Immigrati",
+   "colore": "#2f8fa8"
+  }
+ ],
+ "moventi": [
+  {
+   "id": "rapinatore",
+   "nome": "Rapinatore",
+   "testo": "Non puoi uccidere nessuno che si trovi in un quartiere adiacente all'ultima Scena del Crimine.",
+   "dettaglio": "Una vittima può trovarsi accanto a una Scena del Crimine solo se non è la più recente."
+  },
+  {
+   "id": "estremista",
+   "nome": "Estremista",
+   "testo": "Almeno 3 delle vittime devono appartenere allo stesso gruppo sociale.",
+   "dettaglio": "Si può scegliere chiunque finché resta possibile arrivare a 3 vittime dello stesso gruppo entro la quinta."
+  },
+  {
+   "id": "sadico",
+   "nome": "Sadico",
+   "testo": "Non puoi uccidere civili intimiditi.",
+   "dettaglio": ""
+  },
+  {
+   "id": "cannibale",
+   "nome": "Cannibale",
+   "testo": "Tra le vittime devono esserci civili di tutte e tre le diverse corporature.",
+   "dettaglio": "In qualsiasi ordine: si può scegliere chiunque finché restano abbastanza omicidi per completare le tre corporature."
+  },
+  {
+   "id": "psicopatico",
+   "nome": "Psicopatico",
+   "testo": "Tutte le vittime devono essere al massimo di due età diverse.",
+   "dettaglio": ""
+  },
+  {
+   "id": "cultista",
+   "nome": "Cultista",
+   "testo": "La prima vittima deve appartenere a un gruppo sociale diverso da quello della Persona Segnalata. Ogni vittima deve appartenere a un gruppo sociale diverso rispetto all'ultima vittima. Devi uccidere la Persona Segnalata.",
+   "dettaglio": "La Persona Segnalata si può uccidere in qualsiasi momento tranne nel primo round; se ci sono già 4 vittime deve essere lei la prossima."
+  },
+  {
+   "id": "vigilante",
+   "nome": "Vigilante",
+   "testo": "Non puoi uccidere nessuno negli 8 quartieri che circondano (anche in diagonale) il segnalino Detective.",
+   "dettaglio": ""
+  },
+  {
+   "id": "tagliagole",
+   "nome": "Tagliagole",
+   "testo": "Non puoi uccidere nei 4 quartieri centrali della città.",
+   "dettaglio": ""
+  },
+  {
+   "id": "maniaco",
+   "nome": "Maniaco",
+   "testo": "Tutte le vittime devono essere dello stesso sesso.",
+   "dettaglio": "La prima vittima può essere di entrambi i sessi."
+  },
+  {
+   "id": "terrorista",
+   "nome": "Terrorista",
+   "testo": "Tutte le vittime devono appartenere a gruppi sociali diversi.",
+   "dettaglio": ""
+  },
+  {
+   "id": "killer",
+   "nome": "Killer",
+   "testo": "Puoi uccidere solo civili che si trovano da soli in un quartiere.",
+   "dettaglio": ""
+  },
+  {
+   "id": "spia",
+   "nome": "Spia",
+   "testo": "Tutte le vittime devono essere uccise in quartieri con edifici.",
+   "dettaglio": ""
+  }
+ ],
+ "quartieri": [
+  "Rocky Hall",
+  "Docks",
+  "Little Italy",
+  "Golden Beach",
+  "West Side",
+  "Business Center",
+  "President Square",
+  "East Side",
+  "Chinatown",
+  "Central Park",
+  "Santa Cruz",
+  "River Station",
+  "Stadium",
+  "Richmond",
+  "University Campus",
+  "Old City"
+ ],
+ "edifici": [
+  {
+   "id": "polizia",
+   "nome": "Comando di Polizia",
+   "testo": "Colloca il segnalino Sorveglianza su un civile in questo quartiere o in uno adiacente (oppure spostalo se è già su un civile)."
+  },
+  {
+   "id": "ristorante",
+   "nome": "Ristorante",
+   "testo": "Interroga un civile non intimidito in questo quartiere o in uno adiacente."
+  },
+  {
+   "id": "ospedale",
+   "nome": "Ospedale",
+   "testo": "Conforta un civile intimidito in questo quartiere o in uno adiacente (gira la sua carta sul lato a colori)."
+  },
+  {
+   "id": "pompieri",
+   "nome": "Caserma dei Pompieri",
+   "testo": "Pesca a caso una tessera dalla pila dei gruppi sociali: puoi muovere una volta ogni civile di quel gruppo. Poi rimescola la tessera nella pila."
+  }
+ ],
+ "disposizioni": {
+  "base": {
+   "nome": "Città di base (regolamento)",
+   "edifici": {
+    "0": "pompieri",
+    "2": "ospedale",
+    "5": "polizia",
+    "7": "ristorante",
+    "9": "ristorante",
+    "11": "ospedale",
+    "12": "pompieri",
+    "14": "polizia"
+   }
+  }
+ },
+ "domande": [
+  {
+   "id": "M",
+   "testo": "L'Assassino è un uomo?",
+   "breve": "Uomo",
+   "attr": "sesso",
+   "val": "M"
+  },
+  {
+   "id": "F",
+   "testo": "L'Assassino è una donna?",
+   "breve": "Donna",
+   "attr": "sesso",
+   "val": "F"
+  },
+  {
+   "id": "20",
+   "testo": "L'Assassino è giovane (20)?",
+   "breve": "20",
+   "attr": "eta",
+   "val": 20
+  },
+  {
+   "id": "40",
+   "testo": "L'Assassino è di mezza età (40)?",
+   "breve": "40",
+   "attr": "eta",
+   "val": 40
+  },
+  {
+   "id": "60",
+   "testo": "L'Assassino è anziano (60)?",
+   "breve": "60",
+   "attr": "eta",
+   "val": 60
+  },
+  {
+   "id": "E",
+   "testo": "L'Assassino è di corporatura esile?",
+   "breve": "Esile",
+   "attr": "corporatura",
+   "val": "E"
+  },
+  {
+   "id": "MM",
+   "testo": "L'Assassino è di corporatura media?",
+   "breve": "Media",
+   "attr": "corporatura",
+   "val": "M"
+  },
+  {
+   "id": "R",
+   "testo": "L'Assassino è di corporatura robusta?",
+   "breve": "Robusta",
+   "attr": "corporatura",
+   "val": "R"
+  },
+  {
+   "id": "A",
+   "testo": "L'Assassino è alto?",
+   "breve": "Alto",
+   "attr": "altezza",
+   "val": "A"
+  },
+  {
+   "id": "MA",
+   "testo": "L'Assassino è di altezza media?",
+   "breve": "Altezza media",
+   "attr": "altezza",
+   "val": "M"
+  },
+  {
+   "id": "B",
+   "testo": "L'Assassino è basso?",
+   "breve": "Basso",
+   "attr": "altezza",
+   "val": "B"
+  }
+ ],
+ "moventi_principianti": [
+  "maniaco",
+  "sadico",
+  "tagliagole",
+  "vigilante",
+  "killer",
+  "terrorista"
+ ]
+}
