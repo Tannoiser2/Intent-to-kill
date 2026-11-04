@@ -8,6 +8,7 @@ var pausa := 0.55
 
 
 func decide(m: Motore, posto: int, req: Dictionary):
+	ia.livello = str(m.config.get("livello", "normale"))
 	if vista != null:
 		vista.ia_pensa(posto, req)
 		var t := pausa

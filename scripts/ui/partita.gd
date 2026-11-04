@@ -281,7 +281,8 @@ func _aggiorna_tutto() -> void:
 	tavolo.aggiorna()
 	var fasi := {"preparazione": "Preparazione", "assassino": "Fase dell'Assassino", "detective": "Fase del Detective", "citta": "Fase della Città", "accusa": "Conclusioni", "fine": "Fine della partita"}
 	l_round.text = "  ROUND %d  " % maxi(motore.round, 1)
-	l_stato.text = "%s  |  Vittime %d/5  |  %s" % [fasi.get(motore.fase, ""), motore.vittime.size(), _nome_ruolo()]
+	var liv: String = {"principiante": "Principiante", "normale": "Normale", "esperto": "Esperto"}.get(str(config.get("livello", "normale")), "Normale")
+	l_stato.text = "%s  |  Vittime %d/5  |  %s  |  IA %s" % [fasi.get(motore.fase, ""), motore.vittime.size(), _nome_ruolo(), liv]
 	_aggiorna_dossier()
 
 

@@ -10,6 +10,7 @@ var moventi := "principianti"
 var poi := true
 var citta := "base"
 var scenario := ""
+var livello := "normale"
 var l_scenario: Label
 var nome: LineEdit
 var codice: LineEdit
@@ -53,6 +54,7 @@ func _ready() -> void:
 	_riga(v, "Moventi", "moventi", [["Prima partita", "principianti"], ["A caso", "casuali"]], moventi)
 	_riga(v, "Persona Segnalata", "poi", [["Sì", true], ["No (prima partita)", false]], poi)
 	_riga(v, "Edifici", "citta", [["Come nel regolamento", "base"], ["A caso", "casuale"]], citta)
+	_riga(v, "Difficoltà IA", "livello", [["Principiante", "principiante"], ["Normale", "normale"], ["Esperto", "esperto"]], livello)
 	var hs := HBoxContainer.new()
 	var ls := UI.etichetta("Scenario", 19, UI.CARTA)
 	ls.custom_minimum_size.x = 190
@@ -169,17 +171,18 @@ func _carica_impostazioni() -> void:
 		poi = c.get_value("m", "poi", poi)
 		citta = c.get_value("m", "citta", citta)
 		scenario = c.get_value("m", "scenario", scenario)
+		livello = c.get_value("m", "livello", livello)
 
 
 func _salva_impostazioni() -> void:
 	var c := ConfigFile.new()
-	for k in ["ruolo", "modo", "moventi", "poi", "citta", "scenario"]:
+	for k in ["ruolo", "modo", "moventi", "poi", "citta", "scenario", "livello"]:
 		c.set_value("m", k, get(k))
 	c.save("user://impostazioni.cfg")
 
 
 func _config() -> Dictionary:
-	return {"modo": modo, "moventi": moventi, "persona_segnalata": poi, "citta": citta, "scenario": scenario, "seme": randi() % 1000000000,
+	return {"modo": modo, "moventi": moventi, "persona_segnalata": poi, "citta": citta, "scenario": scenario, "livello": livello, "seme": randi() % 1000000000,
 		"io": ruolo if ruolo < 2 else -1,
 		"giocatori": [{"nome": "Assassino", "ia": ruolo != 0}, {"nome": "Detective", "ia": ruolo != 1}]}
 

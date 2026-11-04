@@ -36,6 +36,7 @@ func _exit_tree() -> void:
 
 
 func decide(m: Motore, s: int, req: Dictionary):
+	ia.livello = str(m.config.get("livello", "normale"))
 	if n < backlog.size():
 		var a: Dictionary = backlog[n]
 		n += 1

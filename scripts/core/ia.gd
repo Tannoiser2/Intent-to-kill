@@ -11,15 +11,158 @@ extends RefCounted
 var _cache_n := -1
 var _cache: Dictionary = {}
 var sosia := -1
+## Livello: "principiante" (sbaglia spesso, non bluffa), "normale", "esperto" (l'Assassino calcola che cosa
+## il Detective ha già capito e sceglie bugie, intimidazioni e vittime per restare nascosto).
+var livello := "normale"
+var rng := RandomNumberGenerator.new()
+
+const MAI_A_CASO := ["accusa_civile", "accusa_movente", "sostenitori", "anticipo", "omicidio"]
 
 
 func scegli(m: Motore, posto: int, req: Dictionary) -> int:
 	var ops: Array = req["opzioni"]
 	if ops.size() <= 1:
 		return 0
+	rng.seed = hash([int(m.config.get("seme", 0)), m.storia.size(), posto, livello])
+	if livello == "principiante":
+		if req["tipo"] == "omicidio":
+			# vittima a caso fra quelle possibili, senza calcoli
+			var vere := []
+			for i in ops.size():
+				if ops[i].has("civ") and not ops[i].has("bomba"):
+					vere.append(i)
+			if not vere.is_empty():
+				return vere[rng.randi_range(0, vere.size() - 1)]
+		elif req["tipo"] == "risposta" and posto == Motore.ASSASSINO:
+			return rng.randi_range(0, 1)
+		elif not (req["tipo"] in MAI_A_CASO) and rng.randf() < 0.45:
+			return rng.randi_range(0, ops.size() - 1)
 	if posto == Motore.ASSASSINO:
+		if livello == "esperto":
+			var r := _assassino_esperto(m, req)
+			if r >= 0:
+				return r
 		return _assassino(m, req)
 	return _detective(m, req)
+
+
+# ======================================================================
+# Assassino esperto: si mette nei panni del Detective
+# ======================================================================
+
+## Probabilità che il Detective assegna al vero Assassino (con le stesse deduzioni dell'IA Detective).
+func _sospetto(m: Motore) -> float:
+	_cache_n = -1
+	var d := deduzioni(m)
+	return float(d["pc"].get(m.assassino, 0.0))
+
+
+## Quanto peggiora la copertura se il civile c, sincero, risponde alla domanda migliore del Detective.
+func _danno(m: Motore, c: int, base: float) -> float:
+	if m.bugiardo(c) or m.pos[c] < 0:
+		return 0.0
+	_cache_n = -1
+	var q: int = _valore_testimone(m, c, deduzioni(m))["q"]
+	m.testimonianze.append({"civ": c, "q": q, "r": Dati.vero(q, m.assassino), "round": m.round, "b": m.pos[c]})
+	var dopo := _sospetto(m)
+	m.testimonianze.pop_back()
+	_cache_n = -1
+	return maxf(0.0, dopo - base)
+
+
+func _raggiungibile(da: int, b: int) -> float:
+	var dd := Dati.distanza(da, b)
+	return [1.0, 0.95, 0.6, 0.15, 0.05, 0.02, 0.01][mini(dd, 6)]
+
+
+func _assassino_esperto(m: Motore, req: Dictionary) -> int:
+	var ops: Array = req["opzioni"]
+	match req["tipo"]:
+		"risposta":
+			var c: int = req["civ"]
+			var q: int = req["q"]
+			if not m.bugiardo(c):
+				var base := _sospetto(m)
+				for i in ops.size():
+					if ops[i].has("ricatto"):
+						# Ricatto solo se la verità costerebbe cara
+						m.testimonianze.append({"civ": c, "q": q, "r": Dati.vero(q, m.assassino), "round": m.round, "b": m.pos[c]})
+						var dopo := _sospetto(m)
+						m.testimonianze.pop_back()
+						_cache_n = -1
+						return i if dopo - base > 0.08 else 0
+				return 0
+			# bugiardo: la risposta che lascia il Detective più lontano dal vero Assassino
+			var best := 0
+			var bv := INF
+			for i in ops.size():
+				if not ops[i].has("v"):
+					continue
+				m.testimonianze.append({"civ": c, "q": q, "r": ops[i]["v"], "round": m.round, "b": m.pos[c]})
+				_cache_n = -1
+				var d := deduzioni(m)
+				var v: float = float(d["pc"].get(m.assassino, 0.0)) - 0.004 * d["pc"].size()
+				m.testimonianze.pop_back()
+				if v < bv - 0.0001:
+					bv = v
+					best = i
+			_cache_n = -1
+			return best
+		"intimidisci":
+			var v := _vittima_migliore(m)
+			var scena: int = m.pos[v] if v >= 0 else m.det
+			var base := _sospetto(m)
+			var best := 0
+			var bv := -INF
+			for i in ops.size():
+				var c: int = ops[i]["civ"]
+				var val := -1.0
+				if not m.bugiardo(c) and not (c == v and m.movente == "sadico"):
+					val = _danno(m, c, base) * _raggiungibile(m.pos[c], scena) + 0.01 * (4 - Dati.distanza(m.pos[c], scena))
+				if val > bv:
+					bv = val
+					best = i
+			return best
+		"omicidio":
+			var base := _sospetto(m)
+			var best := -1
+			var bv := -INF
+			for i in ops.size():
+				if not ops[i].has("civ") or ops[i].has("bomba"):
+					continue
+				var c: int = ops[i]["civ"]
+				var b: int = m.pos[c]
+				var sc := _punteggio_vittima(m, c)
+				# il Detective arriverà su questa scena: pesa quanto potrebbero rivelare i testimoni intorno
+				var rischio := 0.0
+				for x in m.vivi():
+					if x != c and not m.intim[x] and not m.bugiardo(x):
+						rischio += _danno(m, x, base) * _raggiungibile(m.pos[x], b)
+				# uccidere un testimone sincero e pericoloso è un vantaggio
+				var guadagno := _danno(m, c, base) * _raggiungibile(m.pos[c], m.det)
+				sc += -14.0 * rischio + 6.0 * guadagno
+				if sc > bv:
+					bv = sc
+					best = i
+			return best
+		"scegli_mossa":
+			var base := _sospetto(m)
+			var best := ops.size() - 1
+			var bv := 0.02
+			for i in ops.size():
+				if not ops[i].has("civ"):
+					continue
+				var c: int = ops[i]["civ"]
+				var v := 0.0
+				if m.bugiardo(c):
+					v = 0.03 * (Dati.distanza(m.pos[c], m.det) - 1)
+				else:
+					v = _danno(m, c, base) * _raggiungibile(m.pos[c], m.det)
+				if v > bv:
+					bv = v
+					best = i
+			return best
+	return -1
 
 
 # ======================================================================
@@ -57,6 +200,7 @@ func deduzioni(m: Motore) -> Dictionary:
 		km[mv] = ok
 	var w := {}
 	var tot := 0.0
+	var ipotesi_c := {}
 	for c in cand:
 		# testimoni che hanno detto il falso se l'Assassino fosse c
 		var falsi := {}
@@ -64,17 +208,23 @@ func deduzioni(m: Motore) -> Dictionary:
 			if t["civ"] != c and Dati.vero(t["q"], c) != t["r"]:
 				falsi[t["civ"]] = true
 		var n := 0.0
+		var ipotesi := []      # [gruppo dei Sostenitori, peso, Persona Segnalata obbligata o -1]
 		for g in gruppi:
 			var resto := []
 			for x in falsi:
 				if Dati.civile(x)["gruppo"] != g:
 					resto.append(x)
 			if not con_poi:
-				n += 1.0 if resto.is_empty() else 0.0
+				if resto.is_empty():
+					n += 1.0
+					ipotesi.append([g, 1.0, -2])
 			elif resto.is_empty():
 				n += 1.0
+				ipotesi.append([g, 1.0, -1])
 			elif resto.size() == 1 and (confessione == "" or Dati.civile(resto[0])["gruppo"] == confessione):
 				n += 0.15
+				ipotesi.append([g, 0.15, resto[0]])
+		ipotesi_c[c] = ipotesi
 		if n <= 0.0:
 			continue
 		var wc := {}
@@ -111,7 +261,27 @@ func deduzioni(m: Motore) -> Dictionary:
 				pc[c] = pc.get(c, 0.0) + p
 				pm[mv] = pm.get(mv, 0.0) + p
 	_cache_n = chiave
-	_cache = {"pc": pc, "pm": pm, "w": w, "tot": tot}
+	# probabilità che ciascun civile possa mentire (Assassino, Sostenitori o Persona Segnalata)
+	var pl := {}
+	if tot > 0.0:
+		var nc := float(cand.size())
+		for c in w:
+			var wc_tot := 0.0
+			for mv in w[c]:
+				wc_tot += w[c][mv]
+			var n_c := 0.0
+			for h in ipotesi_c[c]:
+				n_c += h[1]
+			for h in ipotesi_c[c]:
+				var quota: float = wc_tot / tot * h[1] / n_c
+				for x in cand:
+					var p := 0.0
+					if x == c or Dati.civile(x)["gruppo"] == h[0] or x == h[2]:
+						p = 1.0
+					elif h[2] == -1:
+						p = 1.0 / maxf(nc - 1.0, 1.0)
+					pl[x] = pl.get(x, 0.0) + quota * p
+	_cache = {"pc": pc, "pm": pm, "w": w, "tot": tot, "pl": pl}
 	return _cache
 
 
@@ -119,6 +289,8 @@ func deduzioni(m: Motore) -> Dictionary:
 func _valore_testimone(m: Motore, x: int, d: Dictionary) -> Dictionary:
 	var pc: Dictionary = d["pc"]
 	var sinc: float = 1.0 - pc.get(x, 0.0) - 1.0 / 7.0
+	if livello == "esperto" and d.has("pl") and not d["pl"].is_empty():
+		sinc = 1.0 - float(d["pl"].get(x, 0.5))
 	var gia := {}
 	for t in m.testimonianze:
 		if t["civ"] == x:

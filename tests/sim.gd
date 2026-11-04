@@ -4,6 +4,8 @@ extends SceneTree
 
 class ControlloSim:
 	var ia := IA.new()
+	func _init(liv := "normale"):
+		ia.livello = liv
 	func decide(m, posto, req):
 		return ia.scegli(m, posto, req)
 
@@ -24,7 +26,9 @@ func _init() -> void:
 		var cfg := {"seme": primo + k, "modo": modo, "moventi": "casuali" if k % 2 == 1 else "principianti", "persona_segnalata": k % 3 != 0, "scenario": ["", "tmen", "terreno", "infernale", "doa", "panico", "strada", "terzo", "attimo"][k % 9] if OS.get_environment("SIM_SCENARI") != "" else "",
 			"giocatori": [{"nome": "A", "ia": true}, {"nome": "D", "ia": true}]}
 		m.prepara(cfg)
-		m.controllori = [ControlloSim.new(), ControlloSim.new()]
+		var la := OS.get_environment("SIM_LIV_A")
+		var ld := OS.get_environment("SIM_LIV_D")
+		m.controllori = [ControlloSim.new(la if la != "" else "normale"), ControlloSim.new(ld if ld != "" else "normale")]
 		await m.gioca()
 		var cert := IA.certezze(m)
 		if cert["innocenti"].has(m.assassino) or cert["esclusi"].has(m.movente):
