@@ -642,3 +642,98 @@ func _assassino(m: Motore, req: Dictionary) -> int:
 		"gruppo_libero":
 			return 0
 	return 0
+
+
+# ======================================================================
+# Certezze per il taccuino (solo dati pubblici)
+# ======================================================================
+
+## Che cosa si può dire con certezza dagli indizi raccolti:
+## {innocenti: {civile: motivo}, sospetti: [civili], esclusi: {movente: motivo}, possibili: [moventi]}
+static func certezze(m: Motore) -> Dictionary:
+	var gruppi := []
+	for g in Dati.d()["gruppi"]:
+		if not m.gruppi_rivelati.has(g["id"]):
+			gruppi.append(g["id"])
+	var con_poi: bool = m.poi >= 0 or m.config.get("persona_segnalata", true)
+	var confessione := ""
+	var profilati := {}
+	if m.intuizione != null:
+		confessione = m.intuizione.confessione
+		for p in m.intuizione.profilazioni:
+			profilati[p["non"]] = true
+	var esclusi := {}
+	for mv in m.moventi:
+		if profilati.has(mv):
+			esclusi[mv] = "La Profilazione criminale lo ha escluso."
+			continue
+		for k in m.uccisioni.size():
+			var u: Dictionary = m.uccisioni[k]
+			if u.has("bomba"):
+				continue
+			if not Regole.ammesso(mv, u["foto"], u["civ"], -1, true):
+				esclusi[mv] = "Con questo movente l'omicidio n. %d (%s) non sarebbe stato possibile." % [k + 1, m.nome(u["civ"])]
+				break
+		if esclusi.has(mv):
+			continue
+		for s in m.sorveglianze:
+			if s["r"] and not Regole.ammesso(mv, s["foto"], s["civ"], -1, true):
+				esclusi[mv] = "La Sorveglianza su %s (round %d) ha risposto Sì: con questo movente sarebbe stato No." % [m.nome(s["civ"]), s["round"]]
+				break
+	var innocenti := {}
+	var sospetti := []
+	var sostegno := {}
+	for c in m.vivi():
+		var motivo := ""
+		for s in m.sorveglianze:
+			if s["civ"] == c and s["r"]:
+				motivo = "la Sorveglianza su di lui avrebbe risposto No, invece ha risposto Sì."
+		if motivo == "":
+			var falsi := []
+			for t in m.testimonianze:
+				if t["civ"] != c and Dati.vero(t["q"], c) != t["r"] and not (t["civ"] in falsi):
+					falsi.append(t["civ"])
+			var ok := false
+			for g in gruppi:
+				var resto := []
+				for x in falsi:
+					if Dati.civile(x)["gruppo"] != g:
+						resto.append(x)
+				if resto.is_empty() or (con_poi and resto.size() == 1 and (confessione == "" or Dati.civile(resto[0])["gruppo"] == confessione)):
+					ok = true
+					break
+			if not ok:
+				var nomi := []
+				for x in falsi:
+					nomi.append(m.nome(x))
+				var elenco := ", ".join(nomi.slice(0, 3)) + ((" e un altro" if nomi.size() == 4 else " e altri %d" % (nomi.size() - 3)) if nomi.size() > 3 else "")
+				motivo = "avrebbero mentito %s: troppi bugiardi di gruppi diversi." % elenco
+		if motivo == "":
+			var mov_ok := []
+			for mv in m.moventi:
+				if esclusi.has(mv):
+					continue
+				var ok2 := true
+				for s in m.sorveglianze:
+					if not s["r"] and s["civ"] != c and mv != "cultista" and Regole.ammesso(mv, s["foto"], s["civ"], -1, true):
+						ok2 = false
+						break
+				if ok2:
+					mov_ok.append(mv)
+			if mov_ok.is_empty():
+				motivo = "nessun movente rimasto torna con le risposte della Sorveglianza."
+			for mv in mov_ok:
+				sostegno[mv] = true
+		if motivo == "":
+			sospetti.append(c)
+		else:
+			innocenti[c] = motivo
+	var possibili := []
+	for mv in m.moventi:
+		if esclusi.has(mv):
+			continue
+		if not sostegno.has(mv) and not sospetti.is_empty():
+			esclusi[mv] = "Con questo movente le Sorveglianze con risposta No indicherebbero come Assassino un civile già escluso."
+			continue
+		possibili.append(mv)
+	return {"innocenti": innocenti, "sospetti": sospetti, "esclusi": esclusi, "possibili": possibili}

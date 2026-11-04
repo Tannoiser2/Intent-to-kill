@@ -28,6 +28,7 @@ var bersagli_civ := {}                 # civile -> indice opzione
 var bersagli_q := {}                   # quartiere -> indice opzione
 var segreti := -1                      # -1 niente, 0 mostra i segreti dell'Assassino
 var evidenzia := -1                    # civile sotto il mouse
+var innocenti := {}                    # civili sicuramente innocenti da timbrare
 var _prima := true
 
 
@@ -133,21 +134,22 @@ func rett_vittima(k: int, i := 0, n := 1) -> Rect2:
 	return Rect2(cx - w / 2, cy - h / 2, w, h)
 
 
+## Ogni quartiere del tabellone è diviso in tre colonne (le linee sottili): una carta per colonna.
+## Un civile va nella colonna centrale, due nelle colonne esterne, tre in tutte e tre.
 func _rett_carte(b: int, n: int) -> Array:
 	var r := rett_quartiere(b)
-	var ch := r.size.y * 0.64
-	var cw := ch * CARTA
-	var gap := cw * 0.10
-	var tot := n * cw + (n - 1) * gap
-	if tot > r.size.x * 0.96:
-		cw = (r.size.x * 0.96 - (n - 1) * gap) / n
-		ch = cw / CARTA
-		tot = n * cw + (n - 1) * gap
-	var x0 := r.position.x + (r.size.x - tot) / 2.0
-	var y0 := r.position.y + r.size.y * 0.165
+	var col := r.size.x / 3.0
+	var cw := col * 0.80
+	var ch := cw / CARTA
+	var y0 := r.position.y + r.size.y * 0.155
+	if y0 + ch > r.position.y + r.size.y * 0.86:
+		ch = r.size.y * 0.705
+		cw = ch * CARTA
+	var colonne: Array = [[1], [0, 2], [0, 1, 2]][clampi(n, 1, 3) - 1]
 	var out := []
 	for i in n:
-		out.append(Rect2(x0 + i * (cw + gap), y0, cw, ch))
+		var k: int = colonne[mini(i, 2)]
+		out.append(Rect2(r.position.x + col * k + (col - cw) / 2.0, y0, cw, ch))
 	return out
 
 
@@ -296,8 +298,9 @@ func aggiorna() -> void:
 	# segnalino Detective
 	if m.det >= 0:
 		var r := rett_quartiere(m.det)
-		var w := r.size.x * 0.46
-		var rr := Rect2(r.position.x + r.size.x * 0.02, r.position.y + r.size.y * 0.80, w, w * 0.53)
+		var h := r.size.y * 0.15
+		var w := h / 0.53
+		var rr := Rect2(r.position.x + r.size.x * 0.03, r.position.y + r.size.y * 0.855, w, h)
 		_metti(auto, rr)
 	else:
 		auto.visible = false
@@ -342,6 +345,14 @@ func _disegna_sovra() -> void:
 		for c in m.civili:
 			if c != m.assassino and c != m.poi and Dati.civile(c)["gruppo"] == m.sostenitori and carte.has(c) and carte[c].visible:
 				_cornice(c, Color(0.9, 0.3, 0.6), "S")
+	for c in innocenti:
+		if carte.has(c) and carte[c].visible and m.pos[c] >= 0:
+			var r: Rect2 = Rect2(carte[c].position, carte[c].size)
+			sovra.draw_rect(r, Color(0.05, 0.12, 0.08, 0.55), true)
+			var fs := int(clampf(r.size.x * 0.24, 10, 18))
+			var cy := r.position.y + r.size.y * 0.45
+			sovra.draw_rect(Rect2(r.position.x, cy - fs, r.size.x, fs * 1.3), Color(0.12, 0.42, 0.28, 0.92), true)
+			sovra.draw_string(UI.f_titoli, Vector2(r.position.x, cy), "INNOCENTE", HORIZONTAL_ALIGNMENT_CENTER, r.size.x, fs, Color.WHITE)
 	if evidenzia >= 0 and carte.has(evidenzia) and carte[evidenzia].visible:
 		var r: Rect2 = Rect2(carte[evidenzia].position, carte[evidenzia].size).grow(2)
 		sovra.draw_rect(r, Color(1, 1, 1, 0.8), false, 2.0)

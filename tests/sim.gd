@@ -26,6 +26,10 @@ func _init() -> void:
 		m.prepara(cfg)
 		m.controllori = [ControlloSim.new(), ControlloSim.new()]
 		await m.gioca()
+		var cert := IA.certezze(m)
+		if cert["innocenti"].has(m.assassino) or cert["esclusi"].has(m.movente):
+			print("CERTEZZA SBAGLIATA seme %d: %s" % [primo + k, str(cert)])
+		conta["certezze_ok"] = conta.get("certezze_ok", 0) + 1
 		conta[m.esito] = conta.get(m.esito, 0) + 1
 		var chiave: String = m.movente + ":" + m.esito
 		mov[chiave] = mov.get(chiave, 0) + 1

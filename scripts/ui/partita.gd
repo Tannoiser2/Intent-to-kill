@@ -16,7 +16,7 @@ var l_round: Label
 var b_firebase: Button
 var dossier: VBoxContainer
 var dossier_box: ScrollContainer
-var schede: HBoxContainer
+var schede: HFlowContainer
 var scheda := "segreti"
 var p_decisione: VBoxContainer
 var l_chi: Label
@@ -31,6 +31,7 @@ var finale: Control
 var mostra_segreti := false
 var esclusi := {}                   # moventi esclusi a mano dal Detective
 var esclusi_civ := {}               # civili attenuati a mano nel taccuino
+var segna_innocenti := false        # timbro «innocente» sul tabellone
 
 var _in_attesa := false
 var _richiesta := {}
@@ -98,13 +99,15 @@ func _avvia() -> void:
 # Costruzione dell'interfaccia
 # ======================================================================
 
+var barra: HBoxContainer
+var pd: PanelContainer
+var pdec: PanelContainer
+var plog: PanelContainer
+var w_dossier := 420.0
+
+
 func _costruisci() -> void:
-	var vp := get_viewport_rect().size
-	var alto := 50.0
-	# barra in alto
-	var barra := HBoxContainer.new()
-	barra.position = Vector2(14, 6)
-	barra.size = Vector2(vp.x - 28, 40)
+	barra = HBoxContainer.new()
 	add_child(barra)
 	barra.add_child(UI.titolo("INTENT TO KILL", 38, UI.ROSSO))
 	var modo := UI.titolo(" LOGICA " if config.get("modo", "logica") == "logica" else " INTUIZIONE ", 24, UI.VERDE if config.get("modo", "logica") == "logica" else UI.ROSSO)
@@ -135,36 +138,26 @@ func _costruisci() -> void:
 	# tabellone
 	tavolo = Tavolo.new()
 	add_child(tavolo)
-	var lato := vp.y - alto - 10
-	tavolo.position = Vector2(10, alto)
-	tavolo.imposta_lato(lato)
 	tavolo.scelta.connect(_premi)
 	tavolo.sopra_civile.connect(_anteprima)
-	var x0 := tavolo.position.x + tavolo.larghezza() + 14
-	var resto := vp.x - x0 - 12
-	var w_dossier := floorf(resto * 0.49)
 	# dossier
-	var pd := UI.pannello()
-	pd.position = Vector2(x0, alto)
-	pd.size = Vector2(w_dossier, lato)
+	pd = UI.pannello()
+	pd.clip_contents = true
 	add_child(pd)
 	var vd := VBoxContainer.new()
 	pd.add_child(vd)
-	schede = HBoxContainer.new()
+	schede = HFlowContainer.new()
 	vd.add_child(schede)
 	dossier_box = ScrollContainer.new()
 	dossier_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	dossier_box.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	dossier_box.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	vd.add_child(dossier_box)
 	dossier = VBoxContainer.new()
 	dossier.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	dossier_box.add_child(dossier)
 	# decisione
-	var x1 := x0 + w_dossier + 10
-	var w1 := vp.x - x1 - 12
-	var pdec := UI.pannello(Color(0.11, 0.09, 0.08, 0.96), UI.ORO, 1)
-	pdec.position = Vector2(x1, alto)
-	pdec.size = Vector2(w1, lato * 0.56)
+	pdec = UI.pannello(Color(0.11, 0.09, 0.08, 0.96), UI.ORO, 1)
+	pdec.clip_contents = true
 	add_child(pdec)
 	p_decisione = VBoxContainer.new()
 	pdec.add_child(p_decisione)
@@ -174,15 +167,14 @@ func _costruisci() -> void:
 	p_decisione.add_child(l_testo)
 	scroll_opzioni = ScrollContainer.new()
 	scroll_opzioni.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll_opzioni.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll_opzioni.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	p_decisione.add_child(scroll_opzioni)
 	box_opzioni = VBoxContainer.new()
 	box_opzioni.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll_opzioni.add_child(box_opzioni)
 	# registro
-	var plog := UI.pannello()
-	plog.position = Vector2(x1, alto + lato * 0.56 + 8)
-	plog.size = Vector2(w1, lato * 0.44 - 8)
+	plog = UI.pannello()
+	plog.clip_contents = true
 	add_child(plog)
 	var vl := VBoxContainer.new()
 	plog.add_child(vl)
@@ -195,7 +187,6 @@ func _costruisci() -> void:
 	vl.add_child(log_t)
 	# anteprima della carta sotto il mouse
 	anteprima = UI.pannello(Color(0.06, 0.05, 0.05, 0.97), UI.ORO, 2)
-	anteprima.position = Vector2(x0 + 8, alto + 8)
 	anteprima.visible = false
 	anteprima.z_index = 40
 	anteprima.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -209,6 +200,42 @@ func _costruisci() -> void:
 	anteprima_testo = UI.testo_lungo("", 16, UI.CARTA)
 	anteprima_testo.custom_minimum_size.x = 230
 	va.add_child(anteprima_testo)
+	_layout()
+	get_viewport().size_changed.connect(_ridimensiona)
+
+
+func _ridimensiona() -> void:
+	_layout()
+	if motore != null:
+		tavolo._prima = true
+		_aggiorna_tutto()
+
+
+## Disposizione dei pannelli in base alla finestra: tabellone a sinistra, dossier, decisione e registro a destra.
+func _layout() -> void:
+	var vp := get_viewport_rect().size
+	var alto := 50.0
+	barra.position = Vector2(14, 6)
+	barra.size = Vector2(vp.x - 28, 40)
+	var lato := vp.y - alto - 10
+	var resto_min := 760.0
+	lato = minf(lato, (vp.x - 20 - resto_min) / Tavolo.RAPP)
+	lato = maxf(lato, 500.0)
+	tavolo.position = Vector2(10, alto)
+	tavolo.imposta_lato(lato)
+	var x0 := tavolo.position.x + tavolo.larghezza() + 12
+	var resto := vp.x - x0 - 10
+	var h := vp.y - alto - 10
+	w_dossier = floorf(resto * 0.5 - 5)
+	pd.position = Vector2(x0, alto)
+	pd.size = Vector2(w_dossier, h)
+	var x1 := x0 + w_dossier + 10
+	var w1 := vp.x - x1 - 10
+	pdec.position = Vector2(x1, alto)
+	pdec.size = Vector2(w1, h * 0.56)
+	plog.position = Vector2(x1, alto + h * 0.56 + 8)
+	plog.size = Vector2(w1, h * 0.44 - 8)
+	anteprima.position = Vector2(x0 + 8, alto + 8)
 
 
 func _anteprima(c: int) -> void:
@@ -271,11 +298,12 @@ func _aggiorna_schede() -> void:
 		c.queue_free()
 	var tutte := []
 	if io == 0 or (io == -1 and mostra_segreti):
-		tutte.append(["segreti", "Dossier dell'Assassino"])
+		tutte.append(["segreti", "Dossier"])
 	tutte.append(["taccuino", "Taccuino"])
+	tutte.append(["deduzioni", "Deduzioni"])
 	tutte.append(["moventi", "Moventi"])
 	if motore.intuizione != null:
-		tutte.append(["carte", "Carte e prove"])
+		tutte.append(["carte", "Carte"])
 	var valide := tutte.map(func(x): return x[0])
 	if not (scheda in valide):
 		scheda = valide[0]
@@ -289,6 +317,8 @@ func _aggiorna_schede() -> void:
 
 func _aggiorna_dossier() -> void:
 	_aggiorna_schede()
+	if segna_innocenti and scheda != "deduzioni":
+		tavolo.innocenti = IA.certezze(motore)["innocenti"]
 	for c in dossier.get_children():
 		c.queue_free()
 	match scheda:
@@ -298,6 +328,8 @@ func _aggiorna_dossier() -> void:
 			_dossier_taccuino()
 		"moventi":
 			_dossier_moventi()
+		"deduzioni":
+			_dossier_deduzioni()
 		"carte":
 			_dossier_carte()
 
@@ -307,7 +339,7 @@ func _dossier_assassino() -> void:
 	dossier.add_child(UI.titolo("DOSSIER DELL'ASSASSINO", 26, UI.ROSSO))
 	var hb := HBoxContainer.new()
 	dossier.add_child(hb)
-	var w := minf(150.0, dossier_box.size.x / 2.0 - 20)
+	var w := minf(150.0, w_dossier / 2.0 - 24)
 	for x in [[m.assassino, "Sei tu"], [m.poi, "Persona Segnalata"]]:
 		if x[0] < 0:
 			continue
@@ -454,11 +486,12 @@ func _dossier_taccuino() -> void:
 func _dossier_moventi() -> void:
 	var m := motore
 	dossier.add_child(UI.titolo("MOVENTI IN GIOCO", 26, UI.ORO))
-	dossier.add_child(UI.testo_lungo("Clicca su un movente per segnarlo come escluso (solo un promemoria per te).", 14, UI.GRIGIO))
+	var cert := IA.certezze(m)
+	dossier.add_child(UI.testo_lungo("I moventi che gli indizi escludono con certezza sono timbrati «Escluso dagli indizi» (passa sopra la carta per il motivo). Puoi anche cliccare su un movente per segnarlo a mano come promemoria.", 14, UI.GRIGIO))
 	var g := GridContainer.new()
 	g.columns = 3
 	dossier.add_child(g)
-	var w := floorf((dossier_box.size.x - 30) / 3.0)
+	var w := floorf((w_dossier - 50) / 3.0)
 	for mv in m.moventi:
 		var box := Control.new()
 		box.custom_minimum_size = Vector2(w, w * 1.43)
@@ -466,9 +499,12 @@ func _dossier_moventi() -> void:
 		im.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		im.tooltip_text = "%s: %s %s" % [Dati.movente(mv)["nome"], Dati.movente(mv)["testo"], Dati.movente(mv).get("dettaglio", "")]
 		box.add_child(im)
-		if esclusi.has(mv):
+		var auto_escluso: bool = cert["esclusi"].has(mv)
+		if auto_escluso:
+			im.tooltip_text += "\n\nESCLUSO DAGLI INDIZI: " + cert["esclusi"][mv]
+		if esclusi.has(mv) or auto_escluso:
 			im.modulate = Color(0.35, 0.35, 0.35)
-			var x := UI.titolo("ESCLUSO", int(w * 0.2), UI.ROSSO)
+			var x := UI.titolo("ESCLUSO" if not auto_escluso else "ESCLUSO\nDAGLI INDIZI", int(w * (0.2 if not auto_escluso else 0.15)), UI.ROSSO)
 			x.rotation = deg_to_rad(-25)
 			x.position = Vector2(w * 0.1, w * 0.7)
 			x.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -481,6 +517,54 @@ func _dossier_moventi() -> void:
 					esclusi[mv] = true
 				_aggiorna_dossier())
 		g.add_child(box)
+
+
+func _dossier_deduzioni() -> void:
+	var m := motore
+	var cert := IA.certezze(m)
+	tavolo.innocenti = cert["innocenti"] if segna_innocenti else {}
+	tavolo.sovra.queue_redraw()
+	dossier.add_child(UI.titolo("DEDUZIONI CERTE" if io != 0 else "COSA PUÒ DEDURRE IL DETECTIVE", 26, UI.ORO))
+	dossier.add_child(UI.testo_lungo("Solo conclusioni sicure, ricavate da testimonianze, Sorveglianze, omicidi e tessere pescate. Un civile è innocente se, supponendo che sia lui l'Assassino, le risposte contrarie richiederebbero più bugiardi di quanti ce ne possano essere: mentono solo l'Assassino, la Persona Segnalata e un unico gruppo di Sostenitori (mai un gruppo già pescato dalla pila).", 14, UI.GRIGIO))
+	var bt := UI.bottone("Segna gli innocenti sul tabellone", 16)
+	bt.toggle_mode = true
+	bt.button_pressed = segna_innocenti
+	bt.toggled.connect(func(v): segna_innocenti = v; _aggiorna_dossier())
+	dossier.add_child(bt)
+	var sosp: Array = cert["sospetti"]
+	dossier.add_child(UI.titolo("SOSPETTI ANCORA POSSIBILI: %d" % sosp.size(), 21, UI.ROSSO))
+	var fl := HFlowContainer.new()
+	var wc := floorf((w_dossier - 60) / 6.0)
+	for c in sosp:
+		var v := VBoxContainer.new()
+		v.add_theme_constant_override("separation", 0)
+		var im := UI.immagine("res://assets/civili/c%02d.webp" % c, wc, wc / 0.3853)
+		im.tooltip_text = "%s\n%s" % [Dati.civile(c)["nome"], Dati.descrivi(c)]
+		v.add_child(im)
+		fl.add_child(v)
+	dossier.add_child(fl)
+	var inn: Dictionary = cert["innocenti"]
+	dossier.add_child(UI.titolo("SICURAMENTE INNOCENTI: %d" % inn.size(), 21, Color(0.45, 0.75, 0.6)))
+	if inn.is_empty():
+		dossier.add_child(UI.etichetta("Ancora nessuno: servono più testimonianze.", 15, UI.GRIGIO))
+	for c in inn:
+		var h := HBoxContainer.new()
+		var im := UI.immagine("res://assets/civili/c%02d.webp" % c, 34, 88)
+		im.modulate = Color(0.75, 0.75, 0.75)
+		h.add_child(im)
+		var t := UI.testo_lungo("%s: se fosse l'Assassino, %s" % [Dati.civile(c)["nome"], inn[c]], 14, UI.CARTA)
+		t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		h.add_child(t)
+		dossier.add_child(h)
+	dossier.add_child(HSeparator.new())
+	var pos_m: Array = cert["possibili"]
+	dossier.add_child(UI.titolo("MOVENTI ANCORA POSSIBILI: %s" % ", ".join(pos_m.map(func(x): return Dati.movente(x)["nome"])), 20, UI.ROSSO))
+	var ex: Dictionary = cert["esclusi"]
+	for mv in m.moventi:
+		if ex.has(mv):
+			dossier.add_child(UI.testo_lungo("%s escluso: %s" % [Dati.movente(mv)["nome"], ex[mv]], 14, UI.CARTA))
+	if ex.is_empty():
+		dossier.add_child(UI.etichetta("Nessun movente escluso con certezza.", 15, UI.GRIGIO))
 
 
 func _dossier_carte() -> void:

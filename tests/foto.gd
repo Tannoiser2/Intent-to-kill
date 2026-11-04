@@ -24,7 +24,7 @@ func _init() -> void:
 	_scatta("2_inizio")
 	var p = main.current
 	var ia := IA.new()
-	var scatti := {12: "3_round1", 40: "4_avanti", 80: "5_avanti"}
+	var scatti := {6: "3_round1", 20: "4_avanti", 60: "5_avanti"}
 	var k := 0
 	while p.motore.esito == "" and k < 400:
 		if p._in_attesa:
@@ -40,6 +40,11 @@ func _init() -> void:
 	p._aggiorna_tutto()
 	await _attendi(0.5)
 	_scatta("7_taccuino")
+	p.scheda = "deduzioni"
+	p.segna_innocenti = true
+	p._aggiorna_tutto()
+	await _attendi(0.5)
+	_scatta("7b_deduzioni")
 	p.scheda = "moventi"
 	p._aggiorna_tutto()
 	await _attendi(0.5)
