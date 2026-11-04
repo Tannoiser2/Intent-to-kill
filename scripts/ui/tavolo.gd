@@ -363,3 +363,30 @@ func _cornice(c: int, col: Color, sigla: String) -> void:
 func _process(_d: float) -> void:
 	if not bersagli_q.is_empty() or not bersagli_civ.is_empty():
 		sovra.queue_redraw()
+
+
+## Fumetto sopra una carta (risposte agli interrogatori e alla Sorveglianza).
+func fumetto(c: int, testo: String, col: Color) -> void:
+	if not carte.has(c):
+		return
+	var t: TextureRect = carte[c]
+	var p := PanelContainer.new()
+	p.add_theme_stylebox_override("panel", UI.stile(UI.CARTA, col, 3, 8, 10))
+	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	p.z_index = 20
+	var l := UI.titolo(testo, 34, col)
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	p.add_child(l)
+	add_child(p)
+	p.reset_size()
+	var pos0 := t.position + Vector2(t.size.x / 2 - p.size.x / 2, -p.size.y * 0.3)
+	pos0.x = clampf(pos0.x, 0, size.x - p.size.x)
+	pos0.y = maxf(pos0.y, 0)
+	p.position = pos0 + Vector2(0, 14)
+	p.modulate.a = 0.0
+	var tw := create_tween()
+	tw.tween_property(p, "modulate:a", 1.0, 0.15)
+	tw.parallel().tween_property(p, "position", pos0, 0.25)
+	tw.tween_interval(2.4)
+	tw.tween_property(p, "modulate:a", 0.0, 0.5)
+	tw.tween_callback(p.queue_free)

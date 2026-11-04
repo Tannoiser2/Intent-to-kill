@@ -2,7 +2,7 @@
 
 Versione digitale in Godot 4.7 di **Intent to Kill** (Artur Khodzhikov, Hobby World 2023; in Italia Ghenos Games), il gioco di deduzione noir in cui un Assassino si nasconde fra i civili della città e un Detective deve scoprire chi è e qual è il suo movente prima del quinto omicidio.
 
-Si gioca nel browser: https://tannoiser2.github.io/Intent-to-Kill/
+Si gioca nel browser: https://tannoiser2.github.io/Intent-to-kill/
 
 ## Cosa c'è
 

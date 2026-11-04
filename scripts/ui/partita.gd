@@ -383,9 +383,15 @@ func _dossier_taccuino() -> void:
 	var fl := HFlowContainer.new()
 	for g in Dati.d()["gruppi"]:
 		if m.gruppi_rivelati.has(g["id"]):
-			var im := UI.immagine("res://assets/gruppi/%s.png" % g["id"], 74, 42)
+			var vg := VBoxContainer.new()
+			vg.add_theme_constant_override("separation", 0)
+			var im := UI.immagine("res://assets/gruppi/%s.png" % g["id"], 92, 50)
 			im.tooltip_text = "%s: tessera pescata dalla pila, quindi non sono i Sostenitori." % g["nome"]
-			fl.add_child(im)
+			vg.add_child(im)
+			var l := UI.etichetta(g["nome"], 14, UI.CARTA)
+			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			vg.add_child(l)
+			fl.add_child(vg)
 	if m.gruppi_rivelati.is_empty():
 		fl.add_child(UI.etichetta("Ancora nessuna tessera pescata.", 15, UI.GRIGIO))
 	dossier.add_child(fl)
@@ -606,8 +612,13 @@ func _evento(e: Dictionary) -> void:
 	match e["k"]:
 		"omicidio":
 			_lampo(Color(0.7, 0.0, 0.0, 0.35))
-		"fine":
-			pass
+		"risposta":
+			tavolo.aggiorna()
+			tavolo.fumetto(e["civ"], "%s? %s" % [Dati.domanda(e["q"])["breve"], "SÌ" if e["r"] else "NO"], Color(0.1, 0.45, 0.3) if e["r"] else UI.ROSSO)
+		"sorveglianza":
+			tavolo.fumetto(e["civ"], "PUÒ UCCIDERLO? %s" % ("SÌ" if e["r"] else "NO"), Color(0.1, 0.25, 0.55))
+		"intimidito":
+			tavolo.aggiorna()
 
 
 func _lampo(c: Color) -> void:

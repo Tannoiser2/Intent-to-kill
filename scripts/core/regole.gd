@@ -43,7 +43,7 @@ static func ammesso(mov: String, s: Dictionary, c: int, poi := -1, poi_ignota :=
 	var v: Array = s["vittime"]
 	var b: int = s["pos"][c]
 	var cc := Dati.civile(c)
-	var restano := VITTIME_TOTALI - v.size() - 1
+	var restano := maxi(0, VITTIME_TOTALI - v.size() - 1)
 	match mov:
 		"maniaco":
 			return v.is_empty() or Dati.civile(v[0])["sesso"] == cc["sesso"]
